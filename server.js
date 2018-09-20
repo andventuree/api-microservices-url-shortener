@@ -62,7 +62,7 @@ app.get("/api/shorturl", (req, res, next) => {
       });
       return urls;
     })
-    .then(urls => res.json({ urls }))
+    .then(urls => res.status(200).json({ urls })) // 200 OK
     .catch(next);
 });
 
@@ -82,14 +82,14 @@ app.post("/api/shorturl/new", (req, res, next) => {
           // 3) Create instance to save to DB
           let url = new URL({
             original_url: sanitizedUrl,
-            short_url: dbData.length //next index
+            short_url: dbData.length
           });
           // 4) Save instance to DB
           url.save((err, data) => {
             if (err) next(err);
             let { original_url, short_url } = data;
             // 5) Return saved results back to front end
-            res.json({ original_url, short_url });
+            res.status(201).json({ original_url, short_url }); // 201 Created
           });
         })
         .catch(next);
@@ -102,10 +102,8 @@ app.get("/api/shorturl/:id", (req, res, next) => {
   URL.findOne({ short_url: req.params.id }, (err, data) => {
     if (err) next(err);
     data === null
-      ? res.json({
-          error: "No short url found for given input"
-        })
-      : res.redirect(`https://${data.original_url}`);
+      ? res.status(404).json({ error: "No short url found for given input" }) //Not Found
+      : res.status(302).redirect(`https://${data.original_url}`); //302 Found
   }).catch(next);
 });
 
