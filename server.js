@@ -68,27 +68,25 @@ app.get("/api/shorturl", (req, res, next) => {
 
 // POST /api/shorturl/new
 app.post("/api/shorturl/new", (req, res, next) => {
-  // 1) Regex to remove protocols e.g., https://
-  let sanitizedUrl = req.body.url.replace(/(^\w+:|^)\/\//, "");
-  // 2) Determine if URL is valid
+  // Determine if URL is valid
   dns.lookup(sanitizedUrl, (err, address, family) => {
     if (err) {
-      // 2a) invalid URL, send error
+      // invalid URL, send error
       res.json({ error: "invalid URL" });
     } else {
-      // 2b) Find collection with URL key so you can get next index
+      // Find collection with URL key so you can get next index
       URL.find(data => data)
         .then(dbData => {
-          // 3) Create instance to save to DB
+          // Create instance to save to DB
           let url = new URL({
             original_url: sanitizedUrl,
             short_url: dbData.length //next index
           });
-          // 4) Save instance to DB
+          //  Save instance to DB
           url.save((err, data) => {
             if (err) next(err);
             let { original_url, short_url } = data;
-            // 5) Return saved results back to front end
+            // Return saved results back to front end
             res.json({ original_url, short_url });
           });
         })
@@ -99,7 +97,7 @@ app.post("/api/shorturl/new", (req, res, next) => {
 
 // GET /api/shorturl/:id
 app.get("/api/shorturl/:id", (req, res, next) => {
-  console.log(req.params.id);
+  // console.log(req.params.id);
   URL.findOne({ short_url: req.params.id }, (err, data) => {
     if (err) next(err);
     data === null
