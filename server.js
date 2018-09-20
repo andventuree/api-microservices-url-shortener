@@ -99,7 +99,7 @@ app.post("/api/shorturl/new", (req, res, next) => {
 
 // GET /api/shorturl/:id
 app.get("/api/shorturl/:id", (req, res, next) => {
-  console.log(req.params.id);
+  // console.log(req.params.id);
   URL.findOne({ short_url: req.params.id }, (err, data) => {
     if (err) next(err);
     data === null
