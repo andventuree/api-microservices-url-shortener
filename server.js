@@ -73,9 +73,11 @@ app.post("/api/shorturl/new", (req, res, next) => {
   URL.find(data => data)
     .then(dbData => {
       console.log("dbData: ", dbData);
-      // 2) Create instance to save to DB
+      // 2) Regex to remove protocols e.g., https://
+      let sanitizedUrl = req.body.url.replace(/(^\w+:|^)\/\//, "");
+      // 3) Create instance to save to DB
       let url = new URL({
-        original_url: req.body.url,
+        original_url: sanitizedUrl,
         short_url: dbData.length //next index
       });
       // 3) Save instance to DB
@@ -92,7 +94,7 @@ app.post("/api/shorturl/new", (req, res, next) => {
 
 // GET /api/shorturl/:id
 app.get("/api/shorturl/:id", (req, res, next) => {
-  // URL.findById(0, data =>
+  // URL.findById(req.params.id, data =>
   //   res.json({ original_url: data.original_url, short_url: data.short_url })
   // );
 });
